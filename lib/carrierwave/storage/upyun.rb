@@ -16,7 +16,7 @@ module CarrierWave
     #       config.upyun_storage_username = "xxxxxx"
     #       config.upyun_storage_userpass = "xxxxxx"
     #       config.upyun_storage_bucket = "my_bucket"
-    #       config.upyun_host = "https://my_bucket.files.example.com"
+    #       config.upyun_bucket_domain = "https://my_bucket.files.example.com"
     #       config.upyun_storage_api_host = "http://v0.api.upyun.com"
     #     end
     #
@@ -107,8 +107,8 @@ module CarrierWave
         # [String] file's url
         #
         def url
-          if @uploader.upyun_host
-            "http://" + @uploader.upyun_host + '/' + @path
+          if @uploader.upyun_bucket_domain
+            "http://" + @uploader.upyun_bucket_domain + '/' + @path
           else
             nil
           end

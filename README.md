@@ -21,7 +21,7 @@ CarrierWave.configure do |config|
   config.upyun_storage_username = "xxxxxx"
   config.upyun_storage_userpass = 'xxxxxx'
   config.upyun_storage_bucket = "my_bucket"
-  config.upyun_host = "my_bucket.files.example.com"
+  config.upyun_bucket_domain = "my_bucket.files.example.com"
 end
 ```
 
