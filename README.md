@@ -1,6 +1,6 @@
 # CarrierWave for TFS
 
-This gem adds support for UpYun Storage [UpYun](http://www.upyun.com) to [CarrierWave](https://github.com/jnicklas/carrierwave/)
+This gem adds support for [UpYun Storage](http://www.upyun.com) to [CarrierWave](https://github.com/jnicklas/carrierwave/)
 
 ## Installation
 
