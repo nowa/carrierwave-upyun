@@ -9,14 +9,13 @@ This gem adds support for [UpYun Storage](http://www.upyun.com) to [CarrierWave]
 ## Using Bundler
 
     gem 'rest-client'
-    gem 'carrierwave-upyun'
+    gem 'carrierwave-upyun', :require => "carrierwave/upyun"
 
 ## Configuration
 
 You'll need to configure the to use this in config/initializes/carrierwave.rb
 
 ```ruby
-require "carrierwave/upyun"
 CarrierWave.configure do |config|
   config.upyun_storage_username = "xxxxxx"
   config.upyun_storage_userpass = 'xxxxxx'

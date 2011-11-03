@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "carrierwave-upyun"
-  s.version     = "0.1"
+  s.version     = "0.1.1"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Nowa Zhu"]
   s.email       = ["nowazhu@gmail.com"]
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency "carrierwave", [">= 0.5.7"]
-  s.add_development_dependency "rest-client", ['~> 1.6.7']
+  s.add_dependency "rest-client", [">= 1.6.7"]
   s.add_development_dependency "rspec", ["~> 2.6"]
   s.add_development_dependency "rake", ["~> 0.9"]
 end
