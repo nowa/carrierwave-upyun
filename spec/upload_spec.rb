@@ -21,7 +21,9 @@ describe "Upload" do
   class PhotoUploader < CarrierWave::Uploader::Base
     include CarrierWave::MiniMagick
 
-    
+    version :small do
+      process :resize_to_fill => [120, 120]
+    end
     
     def store_dir
       "photos"
@@ -42,12 +44,13 @@ describe "Upload" do
   end
   
   context "Upload Image" do
-    it "does can upload jpg image" do
+    it "does upload image" do
       f = load_file("foo.jpg")
       photo = Photo.create(:image => f)
       photo.errors.count.should == 0
-      photo.image.url.should == "http://rspec.b0.upaiyun.com/photos/foo.jpg"
+      open(photo.image.url).should_not == nil
       open(photo.image.url).size.should == f.size
+      open(photo.image.small.url).should_not == nil
     end
   end
 end
