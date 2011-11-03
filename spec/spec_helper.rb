@@ -23,6 +23,7 @@ end
 
 ActiveRecord::Migration.verbose = false
 
+# 测试的时候需要修改这个地方
 CarrierWave.configure do |config|
   config.storage = :upyun
   config.upyun_username = "rspec"
