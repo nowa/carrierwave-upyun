@@ -82,7 +82,7 @@ module CarrierWave
         #
         def read
           object = uy_connection.get(@path)
-          object.data
+          object.net_http_res.read_body
         end
 
         ##
