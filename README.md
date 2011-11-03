@@ -17,9 +17,10 @@ You'll need to configure the to use this in config/initializes/carrierwave.rb
 
 ```ruby
 CarrierWave.configure do |config|
-  config.upyun_storage_username = "xxxxxx"
-  config.upyun_storage_userpass = 'xxxxxx'
-  config.upyun_storage_bucket = "my_bucket"
+  config.storage = :upyun
+  config.upyun_username = "xxxxxx"
+  config.upyun_password = 'xxxxxx'
+  config.upyun_bucket = "my_bucket"
   config.upyun_bucket_domain = "my_bucket.files.example.com"
 end
 ```

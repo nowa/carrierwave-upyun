@@ -13,11 +13,11 @@ module CarrierWave
     ##
     #
     #     CarrierWave.configure do |config|
-    #       config.upyun_storage_username = "xxxxxx"
-    #       config.upyun_storage_userpass = "xxxxxx"
-    #       config.upyun_storage_bucket = "my_bucket"
+    #       config.upyun_username = "xxxxxx"
+    #       config.upyun_password = "xxxxxx"
+    #       config.upyun_bucket = "my_bucket"
     #       config.upyun_bucket_domain = "https://my_bucket.files.example.com"
-    #       config.upyun_storage_api_host = "http://v0.api.upyun.com"
+    #       config.upyun_api_host = "http://v0.api.upyun.com"
     #     end
     #
     #
@@ -25,12 +25,12 @@ module CarrierWave
       
       class Connection
         def initialize(options={})
-          @upyun_storage_username = options[:upyun_storage_username]
-          @upyun_storage_userpass = options[:upyun_storage_userpass]
-          @upyun_storage_bucket = options[:upyun_storage_bucket]
+          @upyun_username = options[:upyun_username]
+          @upyun_password = options[:upyun_password]
+          @upyun_bucket = options[:upyun_bucket]
           @connection_options     = options[:connection_options] || {}
           @host = options[:api_host] || 'http://v0.api.upyun.com'
-          @http = RestClient::Resource.new("#{@host}/#{@upyun_storage_bucket}", @upyun_storage_username, @upyun_storage_userpass)
+          @http = RestClient::Resource.new("#{@host}/#{@upyun_bucket}", @upyun_username, @upyun_password)
         end
         
         def put(path, payload, headers = {})
@@ -140,11 +140,11 @@ module CarrierWave
             if @uy_connection
               @uy_connection
             else
-              config = {:upyun_storage_username => @uploader.upyun_storage_username, 
-                :upyun_storage_userpass => @uploader.upyun_storage_userpass, 
-                :upyun_storage_bucket => @uploader.upyun_storage_bucket
+              config = {:upyun_username => @uploader.upyun_username, 
+                :upyun_password => @uploader.upyun_password, 
+                :upyun_bucket => @uploader.upyun_bucket
               }
-              config[:api_host] = @uploader.upyun_storage_api_host if @uploader.respond_to?(:upyun_storage_api_host)
+              config[:api_host] = @uploader.upyun_api_host if @uploader.respond_to?(:upyun_api_host)
               @uy_connection ||= CarrierWave::Storage::UpYun::Connection.new(config)
             end
           end

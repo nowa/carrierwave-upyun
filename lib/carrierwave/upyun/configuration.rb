@@ -3,10 +3,10 @@ module CarrierWave
     module Configuration
       extend ActiveSupport::Concern
       included do
-        add_config :upyun_storage_username
-        add_config :upyun_storage_userpass
-        add_config :upyun_storage_bucket
-        add_config :upyun_storage_api_host
+        add_config :upyun_username
+        add_config :upyun_password
+        add_config :upyun_bucket
+        add_config :upyun_api_host
         add_config :upyun_bucket_domain
       end
     end
