@@ -10,8 +10,7 @@ require 'carrierwave/processing/mini_magick'
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-require "carrierwave/upyun"
-
+require "carrierwave-upyun"
 
 module Rails
   class <<self
