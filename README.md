@@ -8,7 +8,6 @@ This gem adds support for [Upyun.com](http://www.upyun.com) to [CarrierWave](htt
 
 ## Or using Bundler, in `Gemfile`
 
-    gem 'rest-client'
     gem 'carrierwave-upyun'
 
 ## Configuration
