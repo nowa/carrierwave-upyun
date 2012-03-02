@@ -1,15 +1,15 @@
-# CarrierWave for TFS
+# CarrierWave for [Upyun](http://upyun.com)
 
-This gem adds support for [UpYun Storage](http://www.upyun.com) to [CarrierWave](https://github.com/jnicklas/carrierwave/)
+This gem adds support for [Upyun.com](http://www.upyun.com) to [CarrierWave](https://github.com/jnicklas/carrierwave/)
 
 ## Installation
 
     gem install carrierwave-upyun
 
-## Using Bundler
+## Or using Bundler, in `Gemfile`
 
     gem 'rest-client'
-    gem 'carrierwave-upyun', :require => "carrierwave/upyun"
+    gem 'carrierwave-upyun'
 
 ## Configuration
 
