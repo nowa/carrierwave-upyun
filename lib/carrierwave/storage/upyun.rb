@@ -30,7 +30,9 @@ module CarrierWave
           @upyun_bucket = options[:upyun_bucket]
           @connection_options     = options[:connection_options] || {}
           @host = options[:api_host] || 'http://v0.api.upyun.com'
-          @http = RestClient::Resource.new("#{@host}/#{@upyun_bucket}", @upyun_username, @upyun_password)
+          @http = RestClient::Resource.new("#{@host}/#{@upyun_bucket}", 
+                                            :user => @upyun_username, 
+                                            :password => @upyun_password)
         end
         
         def put(path, payload, headers = {})
@@ -82,7 +84,8 @@ module CarrierWave
         #
         def read
           object = uy_connection.get(@path)
-          object.net_http_res.read_body
+          @headers = object.headers
+          object.net_http_res.body
         end
 
         ##
@@ -113,6 +116,14 @@ module CarrierWave
             nil
           end
         end
+        
+        def content_type
+          headers[:content_type]
+        end
+
+        def content_type=(new_content_type)
+          headers[:content_type] = new_content_type
+        end
 
         ##
         # Writes the supplied data into the object on Cloud Files.
@@ -129,7 +140,11 @@ module CarrierWave
         private
 
           def headers
-            @headers ||= {  }
+            @headers ||= begin
+              uy_connection.get(@path).headers
+            rescue Excon::Errors::NotFound # Don't die, just return no headers
+              {}
+            end
           end
 
           def connection
