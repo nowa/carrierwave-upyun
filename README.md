@@ -33,3 +33,14 @@ class AvatarUploader < CarrierWave::Uploader::Base
 end
 ```
 
+You can override configuration item in individual uploader like this:
+
+```ruby
+class AvatarUploader < CarrierWave::Uploader::Base
+  storage :upyun
+
+  self.upyun_bucket = "avatars"
+  self.upyun_bucket_domain = "avatars.files.example.com"
+end
+```
+
