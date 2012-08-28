@@ -84,3 +84,5 @@ class ImageUploader < CarrierWave::Uploader::Base
   end
 end
 ```
+
+To see more details about use UpYun: [http://huacnlee.com/blog/rails-app-image-store-with-carrierwave-upyun/](http://huacnlee.com/blog/rails-app-image-store-with-carrierwave-upyun/)
