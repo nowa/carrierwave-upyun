@@ -30,9 +30,12 @@ module CarrierWave
           @upyun_bucket = options[:upyun_bucket]
           @connection_options     = options[:connection_options] || {}
           @host = options[:api_host] || 'http://v0.api.upyun.com'
-          @@http ||= RestClient::Resource.new("#{@host}/#{@upyun_bucket}",
-                                            :user => @upyun_username,
-                                            :password => @upyun_password)
+          @@http ||= new_rest_client
+          @@http = new_rest_client if @@http.url != "#{@host}/#{@upyun_bucket}"
+        end
+        
+        def new_rest_client
+          RestClient::Resource.new("#{@host}/#{@upyun_bucket}", :user => @upyun_username, :password => @upyun_password)
         end
 
         def put(path, payload, headers = {})
