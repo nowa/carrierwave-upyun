@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'carrierwave'
+
 begin
   require 'rest_client'
   RestClient.log = nil
@@ -22,36 +23,41 @@ module CarrierWave
     #
     #
     class UpYun < Abstract
-
       class Connection
-        def initialize(options={})
+        cattr_reader :shared_connections
+
+        def self.find_or_initialize(bucket, options)
+          @@shared_connections ||= {}
+          @@shared_connections[bucket.to_sym] ||= new(bucket, options)
+        end
+
+        def initialize(bucket, options = {})
+          @upyun_bucket   = bucket
           @upyun_username = options[:upyun_username]
           @upyun_password = options[:upyun_password]
-          @upyun_bucket = options[:upyun_bucket]
-          @connection_options     = options[:connection_options] || {}
+
           @host = options[:api_host] || 'http://v0.api.upyun.com'
-          @@http ||= new_rest_client
-          @@http = new_rest_client if @@http.url != "#{@host}/#{@upyun_bucket}"
         end
-        
-        def new_rest_client
-          RestClient::Resource.new("#{@host}/#{@upyun_bucket}", :user => @upyun_username, :password => @upyun_password)
+        private_class_method :new
+
+        def rest_client
+          @rest_client ||= RestClient::Resource.new("#{@host}/#{@upyun_bucket}", :user => @upyun_username, :password => @upyun_password)
         end
 
         def put(path, payload, headers = {})
-          @@http["#{escaped(path)}"].put(payload, headers)
+          rest_client[escaped(path)].put(payload, headers)
         end
 
         def get(path, headers = {})
-          @@http["#{escaped(path)}"].get(headers)
+          rest_client[escaped(path)].get(headers)
         end
 
         def delete(path, headers = {})
-          @@http["#{escaped(path)}"].delete(headers)
+          rest_client[escaped(path)].delete(headers)
         end
 
         def post(path, payload, headers = {})
-          @@http["#{escaped(path)}"].post(payload, headers)
+          rest_client[escaped(path)].post(payload, headers)
         end
 
         def escaped(path)
@@ -86,7 +92,7 @@ module CarrierWave
         # [String] contents of the file
         #
         def read
-          object = uy_connection.get(@path)
+          object = upyun_connection.get(@path)
           @headers = object.headers
           object.net_http_res.body
         end
@@ -96,7 +102,7 @@ module CarrierWave
         #
         def delete
           begin
-            uy_connection.delete(@path)
+            upyun_connection.delete(@path)
             true
           rescue Exception => e
             # If the file's not there, don't panic
@@ -136,7 +142,7 @@ module CarrierWave
         # boolean
         #
         def store(data,headers={})
-          uy_connection.put(@path, data, {'Expect' => '', 'Mkdir' => 'true'}.merge(headers))
+          upyun_connection.put(@path, data, {'Expect' => '', 'Mkdir' => 'true'}.merge(headers))
           true
         end
 
@@ -144,7 +150,7 @@ module CarrierWave
 
           def headers
             @headers ||= begin
-              uy_connection.get(@path).headers
+              upyun_connection.get(@path).headers
             rescue Excon::Errors::NotFound # Don't die, just return no headers
               {}
             end
@@ -154,19 +160,16 @@ module CarrierWave
             @base.connection
           end
 
-          def uy_connection
-            if @uy_connection
-              @uy_connection
-            else
-              config = {:upyun_username => @uploader.upyun_username,
-                :upyun_password => @uploader.upyun_password,
-                :upyun_bucket => @uploader.upyun_bucket
-              }
-              config[:api_host] = @uploader.upyun_api_host if @uploader.respond_to?(:upyun_api_host)
-              @uy_connection ||= CarrierWave::Storage::UpYun::Connection.new(config)
+          def upyun_connection
+            conn_options = {
+              :upyun_username => @uploader.upyun_username,
+              :upyun_password => @uploader.upyun_password
+            }
+            if @uploader.respond_to?(:upyun_api_host)
+              conn_options[:api_host] = @uploader.upyun_api_host
             end
+            CarrierWave::Storage::UpYun::Connection.find_or_initialize @uploader.upyun_bucket, conn_options
           end
-
       end
 
       ##
@@ -200,7 +203,6 @@ module CarrierWave
       def retrieve!(identifier)
         CarrierWave::Storage::UpYun::File.new(uploader, self, uploader.store_path(identifier))
       end
-
 
     end # CloudFiles
   end # Storage
