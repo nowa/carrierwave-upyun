@@ -24,10 +24,11 @@ module CarrierWave
     #
     class UpYun < Abstract
       class Connection
+        attr_reader :upyun_bucket
         cattr_reader :shared_connections
+        @@shared_connections = {}
 
         def self.find_or_initialize(bucket, options)
-          @@shared_connections ||= {}
           @@shared_connections[bucket.to_sym] ||= new(bucket, options)
         end
 

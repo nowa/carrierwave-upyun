@@ -25,10 +25,10 @@ ActiveRecord::Migration.verbose = false
 # 测试的时候需要修改这个地方
 CarrierWave.configure do |config|
   config.storage = :upyun
-  config.upyun_username = "rspec"
-  config.upyun_password = 'spec123'
-  config.upyun_bucket = "rspec"
-  config.upyun_bucket_domain = "rspec.b0.upaiyun.com"
+  config.upyun_username = ENV['upyun_username'] || "rspec"
+  config.upyun_password = ENV['upyun_password'] || 'spec123'
+  config.upyun_bucket = ENV['upyun_bucket'] || "rspec"
+  config.upyun_bucket_domain = ENV['upyun_bucket_domain'] || "rspec.b0.upaiyun.com"
 end
 
 def load_file(fname)

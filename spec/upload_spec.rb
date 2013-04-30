@@ -57,4 +57,24 @@ describe "Upload" do
       open(@photo.image.small.url).should_not == nil
     end
   end
+
+  context "Connection" do
+    it "create shared connection" do
+      expect {
+        CarrierWave::Storage::UpYun::Connection.find_or_initialize 'bucket0', :upyun_username => "foo"
+        CarrierWave::Storage::UpYun::Connection.find_or_initialize 'bucket0', :upyun_username => "foo"
+        CarrierWave::Storage::UpYun::Connection.find_or_initialize 'bucket1', :upyun_username => "foo"
+      }.to change{ CarrierWave::Storage::UpYun::Connection.shared_connections.size }.by(2)
+    end
+
+    it "create only one instance for same buckets" do
+      CarrierWave::Storage::UpYun::Connection.find_or_initialize 'bucket999', :upyun_username => "foo"
+      CarrierWave::Storage::UpYun::Connection.find_or_initialize 'bucket999', :upyun_username => "foo"
+      instances = []
+      ObjectSpace.each_object(CarrierWave::Storage::UpYun::Connection) do |conn|
+        instances << conn if conn.upyun_bucket == 'bucket999'
+      end
+      instances.should have(1).item
+    end
+  end
 end
