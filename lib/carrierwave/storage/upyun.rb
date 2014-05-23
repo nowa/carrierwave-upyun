@@ -22,7 +22,7 @@ module CarrierWave
     #
     #
     class UpYun < Abstract
-      
+
       class Connection
         def initialize(options={})
           @upyun_username = options[:upyun_username]
@@ -30,27 +30,27 @@ module CarrierWave
           @upyun_bucket = options[:upyun_bucket]
           @connection_options     = options[:connection_options] || {}
           @host = options[:api_host] || 'http://v0.api.upyun.com'
-          @http = RestClient::Resource.new("#{@host}/#{@upyun_bucket}", 
-                                            :user => @upyun_username, 
+          @http = RestClient::Resource.new("#{@host}/#{@upyun_bucket}",
+                                            :user => @upyun_username,
                                             :password => @upyun_password)
         end
-        
+
         def put(path, payload, headers = {})
           @http["#{escaped(path)}"].put(payload, headers)
         end
-        
+
         def get(path, headers = {})
           @http["#{escaped(path)}"].get(headers)
         end
-        
+
         def delete(path, headers = {})
           @http["#{escaped(path)}"].delete(headers)
         end
-        
+
         def post(path, payload, headers = {})
           @http["#{escaped(path)}"].post(payload, headers)
         end
-        
+
         def escaped(path)
           CGI.escape(path)
         end
@@ -73,6 +73,14 @@ module CarrierWave
         #
         def path
           @path
+        end
+
+        def content_type
+          @content_type || ""
+        end
+
+        def content_type=(new_content_type)
+          @content_type = new_content_type
         end
 
         ##
@@ -111,12 +119,16 @@ module CarrierWave
         #
         def url
           if @uploader.upyun_bucket_domain
-            "http://" + @uploader.upyun_bucket_domain + '/' + @path
+            if @uploader.upyun_bucket_domain.match(/^http/)
+              [@uploader.upyun_bucket_domain, @path].join("/")
+            else
+              ["http://",@uploader.upyun_bucket_domain, @path].join("/")
+            end
           else
             nil
           end
         end
-        
+
         def content_type
           headers[:content_type]
         end
@@ -155,8 +167,8 @@ module CarrierWave
             if @uy_connection
               @uy_connection
             else
-              config = {:upyun_username => @uploader.upyun_username, 
-                :upyun_password => @uploader.upyun_password, 
+              config = {:upyun_username => @uploader.upyun_username,
+                :upyun_password => @uploader.upyun_password,
                 :upyun_bucket => @uploader.upyun_bucket
               }
               config[:api_host] = @uploader.upyun_api_host if @uploader.respond_to?(:upyun_api_host)
