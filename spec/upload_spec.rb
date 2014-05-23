@@ -46,11 +46,13 @@ describe "Upload" do
   context "Upload Image" do
     it "does upload image" do
       f = load_file("foo.jpg")
-      photo = Photo.create(:image => f)
-      photo.errors.count.should == 0
-      open(photo.image.url).should_not == nil
-      open(photo.image.url).size.should == f.size
-      open(photo.image.small.url).should_not == nil
+      puts Benchmark.measure {
+        @photo = Photo.create(:image => f)
+      }
+      @photo.errors.count.should == 0
+      open(@photo.image.url).should_not == nil
+      open(@photo.image.url).size.should == f.size
+      open(@photo.image.small.url).should_not == nil
     end
   end
 end

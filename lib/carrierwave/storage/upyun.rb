@@ -30,25 +30,25 @@ module CarrierWave
           @upyun_bucket = options[:upyun_bucket]
           @connection_options     = options[:connection_options] || {}
           @host = options[:api_host] || 'http://v0.api.upyun.com'
-          @http = RestClient::Resource.new("#{@host}/#{@upyun_bucket}",
+          @@http ||= RestClient::Resource.new("#{@host}/#{@upyun_bucket}",
                                             :user => @upyun_username,
                                             :password => @upyun_password)
         end
 
         def put(path, payload, headers = {})
-          @http["#{escaped(path)}"].put(payload, headers)
+          @@http["#{escaped(path)}"].put(payload, headers)
         end
 
         def get(path, headers = {})
-          @http["#{escaped(path)}"].get(headers)
+          @@http["#{escaped(path)}"].get(headers)
         end
 
         def delete(path, headers = {})
-          @http["#{escaped(path)}"].delete(headers)
+          @@http["#{escaped(path)}"].delete(headers)
         end
 
         def post(path, payload, headers = {})
-          @http["#{escaped(path)}"].post(payload, headers)
+          @@http["#{escaped(path)}"].post(payload, headers)
         end
 
         def escaped(path)
