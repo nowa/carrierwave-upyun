@@ -16,7 +16,7 @@ module CarrierWave
     #       config.upyun_username = "xxxxxx"
     #       config.upyun_password = "xxxxxx"
     #       config.upyun_bucket = "my_bucket"
-    #       config.upyun_bucket_domain = "https://my_bucket.files.example.com"
+    #       config.upyun_bucket_host = "https://my_bucket.files.example.com"
     #       config.upyun_api_host = "http://v0.api.upyun.com"
     #     end
     #
@@ -122,7 +122,7 @@ module CarrierWave
         #
         def url
           if @uploader.upyun_bucket_host
-            return [@uploader.upyun_bucket_domain, @path].join("/")
+            return [@uploader.upyun_bucket_host, @path].join("/")
           end
           
           if @uploader.upyun_bucket_domain
