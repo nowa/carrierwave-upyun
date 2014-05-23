@@ -121,7 +121,12 @@ module CarrierWave
         # [String] file's url
         #
         def url
+          if @uploader.upyun_bucket_host
+            return [@uploader.upyun_bucket_domain, @path].join("/")
+          end
+          
           if @uploader.upyun_bucket_domain
+            puts "DEPRECATION: upyun_bucket_domain config is deprecated, please use upyun_bucket_host to insead."
             if @uploader.upyun_bucket_domain.match(/^http/)
               [@uploader.upyun_bucket_domain, @path].join("/")
             else
