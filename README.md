@@ -21,7 +21,9 @@ CarrierWave.configure do |config|
   config.upyun_username = "xxxxxx"
   config.upyun_password = 'xxxxxx'
   config.upyun_bucket = "my_bucket"
-  config.upyun_bucket_domain = "my_bucket.files.example.com"
+  # upyun_bucket_domain 以后将会弃用，请改用 upyun_bucket_host
+  # config.upyun_bucket_domain = "my_bucket.files.example.com"
+  config.upyun_bucket_host = "http://my_bucket.files.example.com"
 end
 ```
 
@@ -40,7 +42,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
   storage :upyun
 
   self.upyun_bucket = "avatars"
-  self.upyun_bucket_domain = "avatars.files.example.com"
+  self.upyun_bucket_host = "https://avatars.files.example.com"
 end
 ```
 

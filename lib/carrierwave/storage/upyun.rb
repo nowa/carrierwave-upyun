@@ -17,7 +17,7 @@ module CarrierWave
     #       config.upyun_username = "xxxxxx"
     #       config.upyun_password = "xxxxxx"
     #       config.upyun_bucket = "my_bucket"
-    #       config.upyun_bucket_domain = "https://my_bucket.files.example.com"
+    #       config.upyun_bucket_host = "https://my_bucket.files.example.com"
     #       config.upyun_api_host = "http://v0.api.upyun.com"
     #     end
     #
@@ -85,6 +85,14 @@ module CarrierWave
           @path
         end
 
+        def content_type
+          @content_type || ""
+        end
+
+        def content_type=(new_content_type)
+          @content_type = new_content_type
+        end
+
         ##
         # Reads the contents of the file from Cloud Files
         #
@@ -120,8 +128,17 @@ module CarrierWave
         # [String] file's url
         #
         def url
+          if @uploader.upyun_bucket_host
+            return [@uploader.upyun_bucket_host, @path].join("/")
+          end
+          
           if @uploader.upyun_bucket_domain
-            "http://" + @uploader.upyun_bucket_domain + '/' + @path
+            puts "DEPRECATION: upyun_bucket_domain config is deprecated, please use upyun_bucket_host to insead."
+            if @uploader.upyun_bucket_domain.match(/^http/)
+              [@uploader.upyun_bucket_domain, @path].join("/")
+            else
+              ["http://",@uploader.upyun_bucket_domain, @path].join("/")
+            end
           else
             nil
           end
