@@ -18,5 +18,4 @@ Gem::Specification.new do |s|
   s.add_dependency "carrierwave", [">= 0.5.7"]
   s.add_dependency "rest-client", [">= 1.6.7"]
   s.add_development_dependency "rspec", ["~> 2.6"]
-  s.add_development_dependency "rake", ["~> 0.9"]
 end
