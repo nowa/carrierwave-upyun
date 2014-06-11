@@ -137,7 +137,7 @@ module CarrierWave
             if @uploader.upyun_bucket_domain.match(/^http/)
               [@uploader.upyun_bucket_domain, @path].join("/")
             else
-              ["http://",@uploader.upyun_bucket_domain, @path].join("/")
+              ["http://" + @uploader.upyun_bucket_domain, @path].join("/")
             end
           else
             nil
