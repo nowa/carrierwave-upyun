@@ -131,17 +131,13 @@ module CarrierWave
           if @uploader.upyun_bucket_host
             return [@uploader.upyun_bucket_host, @path].join("/")
           end
-          
-          if @uploader.upyun_bucket_domain
-            puts "DEPRECATION: upyun_bucket_domain config is deprecated, please use upyun_bucket_host to insead."
-            if @uploader.upyun_bucket_domain.match(/^http/)
-              [@uploader.upyun_bucket_domain, @path].join("/")
-            else
-              ["http://" + @uploader.upyun_bucket_domain, @path].join("/")
-            end
-          else
-            nil
-          end
+
+          return nil unless @uploader.upyun_bucket_domain
+          puts "DEPRECATION: upyun_bucket_domain config is deprecated, please use upyun_bucket_host to insead."
+
+          bucket_host = @uploader.upyun_bucket_domain
+          bucket_host.prepend('http://') if bucket_host.match(/^http/)
+          [bucket_host, @path].join("/")
         end
 
         def content_type
