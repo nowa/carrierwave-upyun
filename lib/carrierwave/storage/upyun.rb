@@ -136,7 +136,7 @@ module CarrierWave
           puts "DEPRECATION: upyun_bucket_domain config is deprecated, please use upyun_bucket_host to insead."
 
           bucket_host = @uploader.upyun_bucket_domain
-          bucket_host.prepend('http://') if bucket_host.match(/^http/)
+          bucket_host.prepend('http://') unless bucket_host.match(/^http/)
           [bucket_host, @path].join("/")
         end
 
