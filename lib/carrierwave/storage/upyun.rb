@@ -85,14 +85,6 @@ module CarrierWave
           @path
         end
 
-        def content_type
-          @content_type || ""
-        end
-
-        def content_type=(new_content_type)
-          @content_type = new_content_type
-        end
-
         ##
         # Reads the contents of the file from Cloud Files
         #
