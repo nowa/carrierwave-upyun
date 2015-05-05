@@ -12,20 +12,20 @@ describe "Upload" do
       end
     end
   end
-  
+
   def drop_db
     ActiveRecord::Base.connection.tables.each do |table|
       ActiveRecord::Base.connection.drop_table(table)
     end
   end
-  
+
   class PhotoUploader < CarrierWave::Uploader::Base
     include CarrierWave::MiniMagick
 
     version :small do
       process :resize_to_fill => [120, 120]
     end
-    
+
     def store_dir
       "photos"
     end
@@ -34,16 +34,16 @@ describe "Upload" do
   class Photo < ActiveRecord::Base
     mount_uploader :image, PhotoUploader
   end
-  
-  
+
+
   before :all do
     setup_db
   end
-  
+
   after :all do
     drop_db
   end
-  
+
   context "Upload Image" do
     it "does upload image" do
       f = load_file("foo.jpg")

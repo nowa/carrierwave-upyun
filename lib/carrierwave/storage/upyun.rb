@@ -16,7 +16,7 @@ module CarrierWave
     #
     class UpYun < Abstract
       DEFAULT_API_URL = 'http://v0.api.upyun.com'
-      
+ 
       class File
         def initialize(uploader, base, path)
           @uploader = uploader
@@ -64,7 +64,13 @@ module CarrierWave
         # Remove the file from Cloud Files
         #
         def delete
-          conn.delete(escaped_path)
+          begin
+            conn.delete(escaped_path)
+            true
+          rescue => e
+            puts "carrierwave-upyun delete failed: #{e.inspect}"
+            nil
+          end
         end
 
         ##
