@@ -1,7 +1,8 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 require "open-uri"
-ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :database => ':memory:')
+ActiveRecord::Base.raise_in_transactional_callbacks = true
+ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: ':memory:')
 
 describe "Upload" do
   def setup_db
@@ -47,12 +48,23 @@ describe "Upload" do
     it "does upload image" do
       f = load_file("foo.jpg")
       puts Benchmark.measure {
-        @photo = Photo.create(:image => f)
+        @photo = Photo.create(image: f)
       }
-      @photo.errors.count.should == 0
-      open(@photo.image.url).should_not == nil
-      open(@photo.image.url).size.should == f.size
-      open(@photo.image.small.url).should_not == nil
+      expect(@photo.errors.count).to eq 0
+      puts "Uploaded: #{@photo.image.url}"
+      
+      res = open(@photo.image.url)
+      
+      expect(res).not_to be_nil
+      expect(res.size).to eq f.size
+      
+      small_res = open(@photo.image.small.url)
+      expect(small_res).not_to be_nil
+      
+      f1 = load_file("foo.gif")
+      p1 = Photo.create(image: f1)
+      res = open(p1.image.url)
+      expect(res.size).to eq f1.size
     end
   end
 end

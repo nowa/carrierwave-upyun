@@ -1,15 +1,14 @@
-# CarrierWave for [Upyun](http://upyun.com)
+# CarrierWave for [UpYun (又拍云存储)](http://upyun.com)
 
 This gem adds support for [Upyun.com](http://www.upyun.com) to [CarrierWave](https://github.com/jnicklas/carrierwave/)
 
+
 ## Installation
 
-    gem install carrierwave-upyun
-
-## Or using Bundler, in `Gemfile`
-
-    gem 'rest-client'
-    gem 'carrierwave-upyun'
+```ruby
+gem 'carrierwave'
+gem 'carrierwave-upyun'
+```
 
 ## Configuration
 
