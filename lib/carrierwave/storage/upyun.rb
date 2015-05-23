@@ -1,16 +1,8 @@
-# encoding: utf-8
-require 'carrierwave'
-
-begin
-  require 'rest_client'
-  RestClient.log = nil
-rescue LoadError
-  raise "You don't have the 'rest_client' gem installed"
-end
+# coding: utf-8
+require "faraday"
 
 module CarrierWave
   module Storage
-
     ##
     #
     #     CarrierWave.configure do |config|
@@ -23,51 +15,9 @@ module CarrierWave
     #
     #
     class UpYun < Abstract
-      class Connection
-        attr_reader :upyun_bucket
-        cattr_reader :shared_connections
-        @@shared_connections = {}
-
-        def self.find_or_initialize(bucket, options)
-          @@shared_connections[bucket.to_sym] ||= new(bucket, options)
-        end
-
-        def initialize(bucket, options = {})
-          @upyun_bucket   = bucket
-          @upyun_username = options[:upyun_username]
-          @upyun_password = options[:upyun_password]
-
-          @host = options[:api_host] || 'http://v0.api.upyun.com'
-        end
-        private_class_method :new
-
-        def rest_client
-          @rest_client ||= RestClient::Resource.new("#{@host}/#{@upyun_bucket}", :user => @upyun_username, :password => @upyun_password)
-        end
-
-        def put(path, payload, headers = {})
-          rest_client[escaped(path)].put(payload, headers)
-        end
-
-        def get(path, headers = {})
-          rest_client[escaped(path)].get(headers)
-        end
-
-        def delete(path, headers = {})
-          rest_client[escaped(path)].delete(headers)
-        end
-
-        def post(path, payload, headers = {})
-          rest_client[escaped(path)].post(payload, headers)
-        end
-
-        def escaped(path)
-          CGI.escape(path)
-        end
-      end
-
+      DEFAULT_API_URL = 'http://v0.api.upyun.com'
+ 
       class File
-
         def initialize(uploader, base, path)
           @uploader = uploader
           @path = path
@@ -83,6 +33,10 @@ module CarrierWave
         #
         def path
           @path
+        end
+        
+        def escaped_path
+          @escaped_path ||= CGI.escape(@path)
         end
 
         def content_type
@@ -101,9 +55,9 @@ module CarrierWave
         # [String] contents of the file
         #
         def read
-          object = upyun_connection.get(@path)
-          @headers = object.headers
-          object.net_http_res.body
+          res = conn.get(escaped_path)
+          @headers = res.headers
+          res.body
         end
 
         ##
@@ -111,10 +65,10 @@ module CarrierWave
         #
         def delete
           begin
-            upyun_connection.delete(@path)
+            conn.delete(escaped_path)
             true
-          rescue Exception => e
-            # If the file's not there, don't panic
+          rescue => e
+            puts "carrierwave-upyun delete failed: #{e.inspect}"
             nil
           end
         end
@@ -128,16 +82,8 @@ module CarrierWave
         # [String] file's url
         #
         def url
-          if @uploader.upyun_bucket_host
-            return [@uploader.upyun_bucket_host, @path].join("/")
-          end
-
-          return nil unless @uploader.upyun_bucket_domain
-          puts "DEPRECATION: upyun_bucket_domain config is deprecated, please use upyun_bucket_host to insead."
-
-          bucket_host = @uploader.upyun_bucket_domain
-          bucket_host.prepend('http://') unless bucket_host.match(/^http/)
-          [bucket_host, @path].join("/")
+          return nil unless @uploader.upyun_bucket_host
+          [@uploader.upyun_bucket_host, @path].join("/")
         end
 
         def content_type
@@ -155,36 +101,32 @@ module CarrierWave
         #
         # boolean
         #
-        def store(data,headers={})
-          upyun_connection.put(@path, data, {'Expect' => '', 'Mkdir' => 'true'}.merge(headers))
+        def store(data, headers = {})
+          conn.put(escaped_path, data) do |req|
+            req.headers = {'Expect' => '', 'Mkdir' => 'true'}.merge(headers)
+          end
           true
         end
 
-        private
-
-          def headers
-            @headers ||= begin
-              upyun_connection.get(@path).headers
-            rescue Excon::Errors::NotFound # Don't die, just return no headers
-              {}
-            end
+        def headers
+          @headers ||= begin
+            conn.get(@path).headers
+          rescue Faraday::ClientError
+            {}
           end
-
-          def connection
-            @base.connection
+        end
+        
+        def conn
+          return @conn if defined?(@conn)
+          
+          api_host = @uploader.upyun_api_host || DEFAULT_API_URL
+          @conn = Faraday.new(url: "#{api_host}/#{@uploader.upyun_bucket}") do |req|
+            req.request :basic_auth, @uploader.upyun_username, @uploader.upyun_password
+            req.request :url_encoded
+            req.adapter Faraday.default_adapter
           end
-
-          def upyun_connection
-            conn_options = {
-              :upyun_username => @uploader.upyun_username,
-              :upyun_password => @uploader.upyun_password
-            }
-            if @uploader.respond_to?(:upyun_api_host)
-              conn_options[:api_host] = @uploader.upyun_api_host
-            end
-            CarrierWave::Storage::UpYun::Connection.find_or_initialize @uploader.upyun_bucket, conn_options
-          end
-      end
+        end
+      end # File
 
       ##
       # Store the file on UpYun
@@ -198,9 +140,8 @@ module CarrierWave
       # [CarrierWave::Storage::UpYun::File] the stored file
       #
       def store!(file)
-        cloud_files_options = {'Content-Type' => file.content_type}
-        f = CarrierWave::Storage::UpYun::File.new(uploader, self, uploader.store_path)
-        f.store(file.read,cloud_files_options)
+        f = File.new(uploader, self, uploader.store_path)
+        f.store(file.read, 'Content-Type' => file.content_type)
         f
       end
 
@@ -215,7 +156,7 @@ module CarrierWave
       # [CarrierWave::Storage::UpYun::File] the stored file
       #
       def retrieve!(identifier)
-        CarrierWave::Storage::UpYun::File.new(uploader, self, uploader.store_path(identifier))
+        File.new(uploader, self, uploader.store_path(identifier))
       end
 
     end # CloudFiles

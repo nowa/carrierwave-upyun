@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'rspec'
-require 'rspec/autorun'
 require 'rails'
 require 'active_record'
 require "carrierwave"
@@ -25,10 +24,10 @@ ActiveRecord::Migration.verbose = false
 # 测试的时候需要修改这个地方
 CarrierWave.configure do |config|
   config.storage = :upyun
-  config.upyun_username = ENV['upyun_username'] || "rspec"
-  config.upyun_password = ENV['upyun_password'] || 'spec123'
-  config.upyun_bucket = ENV['upyun_bucket'] || "rspec"
-  config.upyun_bucket_domain = ENV['upyun_bucket_domain'] || "rspec.b0.upaiyun.com"
+  config.upyun_username = ENV['upyun_username'] || "test"
+  config.upyun_password = ENV['upyun_password'] || '123123'
+  config.upyun_bucket = ENV['upyun_bucket'] || "ruby-china-files-dev"
+  config.upyun_bucket_host = ENV['upyun_bucket_host'] || "http://ruby-china-files-dev.b0.upaiyun.com"
 end
 
 def load_file(fname)

@@ -7,7 +7,6 @@ module CarrierWave
         add_config :upyun_password
         add_config :upyun_bucket
         add_config :upyun_api_host
-        add_config :upyun_bucket_domain
         add_config :upyun_bucket_host
       end
     end
