@@ -1,6 +1,9 @@
 # CarrierWave for [UpYun (又拍云存储)](http://upyun.com)
 
-This gem adds support for [Upyun.com](http://www.upyun.com) to [CarrierWave](https://github.com/jnicklas/carrierwave/)
+This gem adds support for [upyun.com](http://www.upyun.com) to [CarrierWave](https://github.com/jnicklas/carrierwave/)
+
+
+- [![Gem Version](https://badge.fury.io/rb/carrierwave-upyun.png)](https://rubygems.org/gems/carrierwave-upyun)
 
 
 ## Installation
@@ -9,6 +12,8 @@ This gem adds support for [Upyun.com](http://www.upyun.com) to [CarrierWave](htt
 gem 'carrierwave'
 gem 'carrierwave-upyun'
 ```
+
+> NOTE: 此 Gem 是一个 CarrierWave 的组件，你需要配合 CarrierWave 一起使用。
 
 ## Configuration
 
