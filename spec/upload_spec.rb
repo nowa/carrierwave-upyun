@@ -67,4 +67,12 @@ describe "Upload" do
       expect(res.size).to eq f1.size
     end
   end
+  
+  describe 'CarrierWave::SanitizedFile' do
+    it 'should have responed_to identifier' do
+      f = CarrierWave::Storage::UpYun::File.new(nil, nil, nil)
+      expect(f).to respond_to(:identifier)
+      expect(f).to respond_to(:filename)
+    end
+  end
 end

@@ -17,7 +17,7 @@ module CarrierWave
     class UpYun < Abstract
       DEFAULT_API_URL = 'http://v0.api.upyun.com'
  
-      class File
+      class File < CarrierWave::SanitizedFile
         def initialize(uploader, base, path)
           @uploader = uploader
           @path = path

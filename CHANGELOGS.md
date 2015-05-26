@@ -1,3 +1,7 @@
+## 0.2.1
+
+- 修 CarrierWave::Storage::UpYun::File 继承 CarrierWave::SanitizedFile 以便能实现一些 CarrierWave 通用的方法。
+
 ## 0.2.0
 
 - 改用 Faraday 代替 rest-client，来发送 HTTP 请求；
