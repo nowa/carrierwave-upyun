@@ -1,3 +1,7 @@
+## 0.2.2
+
+- 减少 Gem 文件尺寸，避免带入不必要的问题；
+
 ## 0.2.1
 
 - 修 CarrierWave::Storage::UpYun::File 继承 CarrierWave::SanitizedFile 以便能实现一些 CarrierWave 通用的方法。
@@ -20,4 +24,4 @@
 
 ## 0.1.6
 
-- 改进 Upyun 初始化，将少连接的过程; 
+- 改进 Upyun 初始化，将少连接的过程;
