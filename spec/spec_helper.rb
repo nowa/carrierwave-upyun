@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'rspec'
-require 'rails'
 require 'active_record'
 require "carrierwave"
 require 'carrierwave/orm/activerecord'
