@@ -3,7 +3,7 @@
 This gem adds support for [upyun.com](http://www.upyun.com) to [CarrierWave](https://github.com/jnicklas/carrierwave/)
 
 
-[![Gem Version](https://badge.fury.io/rb/carrierwave-upyun.svg)](https://rubygems.org/gems/carrierwave-upyun) [![Build Status](https://travis-ci.org/nowa/carrierwave-upyun.svg?branch=master)](https://travis-ci.org/nowa/carrierwave-upyun) [![Code Climate](https://codeclimate.com/github/nowa/carrierwave-upyun/badges/gpa.svg)](https://codeclimate.com/github/npwa/carrierwave-upyun)
+[![Gem Version](https://badge.fury.io/rb/carrierwave-upyun.svg)](https://rubygems.org/gems/carrierwave-upyun) [![Build Status](https://travis-ci.org/nowa/carrierwave-upyun.svg?branch=master)](https://travis-ci.org/nowa/carrierwave-upyun) [![Code Climate](https://codeclimate.com/github/nowa/carrierwave-upyun/badges/gpa.svg)](https://codeclimate.com/github/nowa/carrierwave-upyun)
 
 ## Installation
 
