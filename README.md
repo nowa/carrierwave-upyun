@@ -16,7 +16,7 @@ gem 'carrierwave-upyun'
 
 ## Configuration
 
-You'll need to configure the to use this in config/initializes/carrierwave.rb
+You'll need to configure the to use this in config/initializers/carrierwave.rb
 
 ```ruby
 CarrierWave.configure do |config|
