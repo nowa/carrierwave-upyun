@@ -16,7 +16,7 @@ module CarrierWave
     #
     class UpYun < Abstract
       DEFAULT_API_URL = 'http://v0.api.upyun.com'
- 
+
       class File < CarrierWave::SanitizedFile
         def initialize(uploader, base, path)
           @uploader = uploader
@@ -34,7 +34,7 @@ module CarrierWave
         def path
           @path
         end
-        
+
         def escaped_path
           @escaped_path ||= CGI.escape(@path)
         end
@@ -102,9 +102,14 @@ module CarrierWave
         # boolean
         #
         def store(data, headers = {})
-          conn.put(escaped_path, data) do |req|
+          res = conn.put(escaped_path, data) do |req|
             req.headers = {'Expect' => '', 'Mkdir' => 'true'}.merge(headers)
           end
+          if res.status != 200
+            puts "Update failed: #{res.body}"
+            return false
+          end
+
           true
         end
 
@@ -115,10 +120,10 @@ module CarrierWave
             {}
           end
         end
-        
+
         def conn
           return @conn if defined?(@conn)
-          
+
           api_host = @uploader.upyun_api_host || DEFAULT_API_URL
           @conn = Faraday.new(url: "#{api_host}/#{@uploader.upyun_bucket}") do |req|
             req.request :basic_auth, @uploader.upyun_username, @uploader.upyun_password
@@ -159,6 +164,21 @@ module CarrierWave
         File.new(uploader, self, uploader.store_path(identifier))
       end
 
+      def cache!(file)
+        f = File.new(uploader, self, uploader.store_path)
+        f.store(file.read, 'Content-Type' => file.content_type)
+        f
+      end
+
+      def retrieve_from_cache!(identifier)
+        File.new(uploader, self, uploader.cache_path(identifier))
+      end
+
+      def delete_dir!(path)
+      end
+
+      def clean_cache!(seconds)
+      end
     end # CloudFiles
   end # Storage
 end # CarrierWave
