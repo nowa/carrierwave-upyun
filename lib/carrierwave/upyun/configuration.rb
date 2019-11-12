@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module CarrierWave
   module UpYun
     module Configuration
@@ -10,13 +12,13 @@ module CarrierWave
         add_config :upyun_bucket_host
       end
     end
-    
+
     module ClassMethods
       def add_config(name)
         class_eval <<-RUBY, __FILE__, __LINE__ + 1
           def self.#{name}(value=nil)
             @#{name} = value if value
-            return @#{name} if self.object_id == #{self.object_id} || defined?(@#{name})
+            return @#{name} if self.object_id == #{object_id} || defined?(@#{name})
             name = superclass.#{name}
             return nil if name.nil? && !instance_variable_defined?("@#{name}")
             @#{name} = name && !name.is_a?(Module) && !name.is_a?(Symbol) && !name.is_a?(Numeric) && !name.is_a?(TrueClass) && !name.is_a?(FalseClass) ? name.dup : name
@@ -31,7 +33,7 @@ module CarrierWave
             value.instance_of?(Proc) ? value.call : value
           end
         RUBY
-      end   
+      end
     end
   end
 end

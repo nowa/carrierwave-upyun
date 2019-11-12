@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'faraday'
+require "faraday"
 
 module CarrierWave
   module Storage
@@ -16,7 +16,7 @@ module CarrierWave
     #
     #
     class UpYun < Abstract
-      DEFAULT_API_URL = 'http://v0.api.upyun.com'
+      DEFAULT_API_URL = "http://v0.api.upyun.com"
 
       class UploadError < RuntimeError; end
       class ConcurrentUploadError < RuntimeError; end
@@ -42,7 +42,7 @@ module CarrierWave
         end
 
         def content_type
-          @content_type || ''
+          @content_type || ""
         end
 
         attr_writer :content_type
@@ -82,7 +82,7 @@ module CarrierWave
         def url
           return nil unless @uploader.upyun_bucket_host
 
-          [@uploader.upyun_bucket_host, @path].join('/')
+          [@uploader.upyun_bucket_host, @path].join("/")
         end
 
         def content_type
@@ -102,14 +102,14 @@ module CarrierWave
         #
         def store(new_file, headers = {})
           res = conn.put(escaped_path, new_file.read) do |req|
-            req.headers = { 'Expect' => '', 'Mkdir' => 'true' }.merge(headers)
+            req.headers = { "Expect" => "", "Mkdir" => "true" }.merge(headers)
           end
 
           if res.status != 200
             # code: 42900007 -> concurrent put or delete
             json = JSON.parse(res.body)
             # retry upload
-            raise ConcurrentUploadError, res.body if json['code'] == 42_900_007
+            raise ConcurrentUploadError, res.body if json["code"] == 42_900_007
 
             raise UploadError, res.body
           end
@@ -153,7 +153,7 @@ module CarrierWave
       #
       def store!(file)
         f = File.new(uploader, self, uploader.store_path)
-        f.store(file, 'Content-Type' => file.content_type)
+        f.store(file, "Content-Type" => file.content_type)
         f
       end
 
@@ -173,7 +173,7 @@ module CarrierWave
 
       def cache!(file)
         f = File.new(uploader, self, uploader.cache_path)
-        f.store(file, 'Content-Type' => file.content_type)
+        f.store(file, "Content-Type" => file.content_type)
         f
       end
 
