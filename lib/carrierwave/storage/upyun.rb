@@ -1,5 +1,6 @@
-# coding: utf-8
-require "faraday"
+# frozen_string_literal: true
+
+require 'faraday'
 
 module CarrierWave
   module Storage
@@ -17,6 +18,9 @@ module CarrierWave
     class UpYun < Abstract
       DEFAULT_API_URL = 'http://v0.api.upyun.com'
 
+      class UploadError < RuntimeError; end
+      class ConcurrentUploadError < RuntimeError; end
+
       class File < CarrierWave::SanitizedFile
         def initialize(uploader, base, path)
           @uploader = uploader
@@ -31,21 +35,17 @@ module CarrierWave
         #
         # [String] A path
         #
-        def path
-          @path
-        end
+        attr_reader :path
 
         def escaped_path
           @escaped_path ||= CGI.escape(@path)
         end
 
         def content_type
-          @content_type || ""
+          @content_type || ''
         end
 
-        def content_type=(new_content_type)
-          @content_type = new_content_type
-        end
+        attr_writer :content_type
 
         ##
         # Reads the contents of the file from Cloud Files
@@ -64,13 +64,11 @@ module CarrierWave
         # Remove the file from Cloud Files
         #
         def delete
-          begin
-            conn.delete(escaped_path)
-            true
-          rescue => e
-            puts "carrierwave-upyun delete failed: #{e.inspect}"
-            nil
-          end
+          conn.delete(escaped_path)
+          true
+        rescue StandardError => e
+          puts "carrierwave-upyun delete failed: #{e.inspect}"
+          nil
         end
 
         ##
@@ -83,7 +81,8 @@ module CarrierWave
         #
         def url
           return nil unless @uploader.upyun_bucket_host
-          [@uploader.upyun_bucket_host, @path].join("/")
+
+          [@uploader.upyun_bucket_host, @path].join('/')
         end
 
         def content_type
@@ -101,34 +100,42 @@ module CarrierWave
         #
         # boolean
         #
-        def store(data, headers = {})
-          res = conn.put(escaped_path, data) do |req|
-            req.headers = {'Expect' => '', 'Mkdir' => 'true'}.merge(headers)
+        def store(new_file, headers = {})
+          res = conn.put(escaped_path, new_file.read) do |req|
+            req.headers = { 'Expect' => '', 'Mkdir' => 'true' }.merge(headers)
           end
+
           if res.status != 200
-            puts "Update failed: #{res.body}"
-            return false
+            # code: 42900007 -> concurrent put or delete
+            json = JSON.parse(res.body)
+            # retry upload
+            raise ConcurrentUploadError, res.body if json['code'] == 42_900_007
+
+            raise UploadError, res.body
           end
 
           true
+        rescue ConcurrentUploadError => e
+          puts "Warning: UpYun error #{e.message}, retry again."
+          retry
         end
 
         def headers
           @headers ||= begin
             conn.get(@path).headers
-          rescue Faraday::ClientError
-            {}
+                       rescue Faraday::ClientError
+                         {}
           end
         end
 
         def conn
-          return @conn if defined?(@conn)
-
-          api_host = @uploader.upyun_api_host || DEFAULT_API_URL
-          @conn = Faraday.new(url: "#{api_host}/#{@uploader.upyun_bucket}") do |req|
-            req.request :basic_auth, @uploader.upyun_username, @uploader.upyun_password
-            req.request :url_encoded
-            req.adapter Faraday.default_adapter
+          @conn ||= begin
+            api_host = @uploader.upyun_api_host || DEFAULT_API_URL
+            Faraday.new(url: "#{api_host}/#{@uploader.upyun_bucket}") do |req|
+              req.request :basic_auth, @uploader.upyun_username, @uploader.upyun_password
+              req.request :url_encoded
+              req.adapter Faraday.default_adapter
+            end
           end
         end
       end # File
@@ -146,7 +153,7 @@ module CarrierWave
       #
       def store!(file)
         f = File.new(uploader, self, uploader.store_path)
-        f.store(file.read, 'Content-Type' => file.content_type)
+        f.store(file, 'Content-Type' => file.content_type)
         f
       end
 
@@ -165,8 +172,8 @@ module CarrierWave
       end
 
       def cache!(file)
-        f = File.new(uploader, self, uploader.store_path)
-        f.store(file.read, 'Content-Type' => file.content_type)
+        f = File.new(uploader, self, uploader.cache_path)
+        f.store(file, 'Content-Type' => file.content_type)
         f
       end
 
@@ -174,11 +181,9 @@ module CarrierWave
         File.new(uploader, self, uploader.cache_path(identifier))
       end
 
-      def delete_dir!(path)
-      end
+      def delete_dir!(path); end
 
-      def clean_cache!(seconds)
-      end
+      def clean_cache!(seconds); end
     end # CloudFiles
   end # Storage
 end # CarrierWave

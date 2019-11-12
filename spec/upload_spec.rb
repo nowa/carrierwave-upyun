@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require_relative './spec_helper'
 
-describe "Upload" do
+describe 'Upload' do
   before :all do
-    ActiveRecord::Schema.define(:version => 1) do
+    ActiveRecord::Schema.define(version: 1) do
       create_table :photos do |t|
         t.column :image, :string
       end
@@ -15,27 +17,22 @@ describe "Upload" do
     end
   end
 
-  context "Upload Image" do
-    it "does upload image" do
-      f = load_file("foo.jpg")
-      puts Benchmark.measure {
-        @photo = Photo.create(image: f)
-      }
+  context 'Upload Image' do
+    it 'does upload image' do
+      f = load_file('foo.jpg')
+      Photo.transaction do
+        puts Benchmark.measure {
+          @photo = Photo.create(image: f)
+        }
+      end
       expect(@photo.errors.count).to eq 0
-      puts "Uploaded: #{@photo.image.url}"
+
+      @photo.reload
+      expect(@photo.image.url).to include('/photos/')
 
       res = open(@photo.image.url)
-
       expect(res).not_to be_nil
       expect(res.size).to eq f.size
-
-      small_res = open(@photo.image.small.url)
-      expect(small_res).not_to be_nil
-
-      f1 = load_file("foo.gif")
-      p1 = Photo.create(image: f1)
-      res = open(p1.image.url)
-      expect(res.size).to eq f1.size
     end
   end
 
