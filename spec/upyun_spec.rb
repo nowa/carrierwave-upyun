@@ -10,7 +10,7 @@ describe "UpYun" do
     uploader.store!(f)
     expect(uploader.url).to include("/photos/")
 
-    res = open(uploader.url)
+    res = URI.open(uploader.url)
     expect(res).not_to be_nil
     expect(res.size).to eq f.size
   end
@@ -22,13 +22,13 @@ describe "UpYun" do
     uploader.cache!(f)
     expect(uploader.url).to include("/uploads/tmp/")
 
-    res = open(uploader.url)
+    res = URI.open(uploader.url)
     expect(res).not_to be_nil
     expect(res.size).to eq f.size
 
     uploader.store!
     expect(uploader.url).to include("/photos/")
-    res = open(uploader.url)
+    res = URI.open(uploader.url)
     expect(res).not_to be_nil
     expect(res.size).to eq f.size
   end

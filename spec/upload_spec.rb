@@ -30,7 +30,7 @@ describe "Upload" do
       @photo.reload
       expect(@photo.image.url).to include("/photos/")
 
-      res = open(@photo.image.url)
+      res = URI.open(@photo.image.url)
       expect(res).not_to be_nil
       expect(res.size).to eq f.size
     end
