@@ -27,9 +27,11 @@ ActiveSupport.on_load :active_record do
   require "carrierwave/orm/activerecord"
 end
 
+# 每次启动测试用不同的地址，确保验证上传成功能正确验证到（因为历史的没删除）
+PHOTO_RANDOM_PATH = SecureRandom.hex
 class PhotoUploader < CarrierWave::Uploader::Base
   def store_dir
-    "photos"
+    "test/#{PHOTO_RANDOM_PATH}/photos"
   end
 end
 

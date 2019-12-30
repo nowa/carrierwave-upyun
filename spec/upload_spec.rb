@@ -26,8 +26,6 @@ describe "Upload" do
         }
       end
       expect(@photo.errors.count).to eq 0
-
-      @photo.reload
       expect(@photo.image.url).to include("/photos/")
 
       res = URI.open(@photo.image.url)
@@ -38,9 +36,11 @@ describe "Upload" do
 
   describe "CarrierWave::SanitizedFile" do
     it "should have responed_to identifier" do
-      f = CarrierWave::Storage::UpYun::File.new(nil, nil, nil)
-      expect(f).to respond_to(:identifier)
-      expect(f).to respond_to(:filename)
+      uploader = PhotoUploader.new
+      f = CarrierWave::Storage::UpYun::File.new(uploader, nil, "foo/bar.jpg")
+      expect(f.filename).to eq("bar.jpg")
+      expect(f.extension).to eq("jpg")
+      expect(f.escaped_path).to eq("foo%2Fbar.jpg")
     end
   end
 end

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "carrierwave/storage/upyun"
+require "carrierwave/storage/upyun/file"
 require "carrierwave/upyun/configuration"
 
 CarrierWave.configure do |config|
