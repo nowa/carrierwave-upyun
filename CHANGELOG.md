@@ -1,8 +1,12 @@
+## 1.0.2
+
+- 修正 1.0.1 版本上传文件存储不正确的问题。
+
 ## 1.0.1
 
 - 对于 CarrierWave 的 cache 机制正确支持；
 - 对 UpYun 偶发的 `concurrent put or delete` 错误容错；
-- 清理不必要的 dependency.
+- 清理不必要的 dependency。
 
 ## 1.0.0
 
