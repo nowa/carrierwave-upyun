@@ -4,7 +4,7 @@ $LOAD_PATH.push File.expand_path("lib", __dir__)
 
 Gem::Specification.new do |s|
   s.name        = "carrierwave-upyun"
-  s.version     = "1.0.2"
+  s.version     = "1.0.3"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Nowa Zhu", "Jason Lee"]
   s.email       = ["nowazhu@gmail.com", "huacnlee@gmail.com"]
