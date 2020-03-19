@@ -97,7 +97,7 @@ module CarrierWave::Storage
 
       def headers
         @headers ||= begin
-          conn.get(escaped_path).headers
+          conn.head(escaped_path).headers
         rescue Faraday::ClientError
           {}
         end
