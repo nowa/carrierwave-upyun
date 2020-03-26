@@ -104,6 +104,17 @@ module CarrierWave::Storage
       end
 
       ##
+      # Return size of file body
+      #
+      # === Returns
+      #
+      # [Integer] size of file body
+      #
+      def size
+        headers['content-length'].to_i
+      end
+
+      ##
       # Writes the supplied data into the object on Cloud Files.
       #
       # === Returns
