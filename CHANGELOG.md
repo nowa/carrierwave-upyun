@@ -1,3 +1,7 @@
+## 1.0.4
+
+- Add size method to avoid recreate_versions error (#39)
+
 ## 1.0.3
 
 - 修复文件名含中文问题 #37
