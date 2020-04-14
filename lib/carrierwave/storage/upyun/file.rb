@@ -170,25 +170,27 @@ module CarrierWave::Storage
       private
 
       def check_put_response!(res)
-        if res.status != 200
-          # code: 42900007 -> concurrent put or delete
-          json = JSON.parse(res.body)
-          # retry upload
-          raise ConcurrentUploadError, res.body if json["code"] == 42_900_007
-
-          raise UploadError, res.body
-        end
+        @base.check_put_response!(res)
+        # if res.status != 200
+        #   # code: 42900007 -> concurrent put or delete
+        #   json = JSON.parse(res.body)
+        #   # retry upload
+        #   raise ConcurrentUploadError, res.body if json["code"] == 42_900_007
+        #
+        #   raise UploadError, res.body
+        # end
       end
 
       def conn
-        @conn ||= begin
-          api_host = @uploader.upyun_api_host || DEFAULT_API_URL
-          Faraday.new(url: "#{api_host}/#{@uploader.upyun_bucket}") do |req|
-            req.request :basic_auth, @uploader.upyun_username, @uploader.upyun_password
-            req.request :url_encoded
-            req.adapter Faraday.default_adapter
-          end
-        end
+        @base.conn
+        # @conn ||= begin
+        #   api_host = @uploader.upyun_api_host || DEFAULT_API_URL
+        #   Faraday.new(url: "#{api_host}/#{@uploader.upyun_bucket}") do |req|
+        #     req.request :basic_auth, @uploader.upyun_username, @uploader.upyun_password
+        #     req.request :url_encoded
+        #     req.adapter Faraday.default_adapter
+        #   end
+        # end
       end
 
 
