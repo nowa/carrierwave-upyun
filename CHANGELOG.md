@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Fix carrierwave version dependency.
+
 ## 1.0.4
 
 - Add size method to avoid recreate_versions error (#39)
