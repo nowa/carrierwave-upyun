@@ -28,7 +28,7 @@ describe "Upload" do
       expect(@photo.errors.count).to eq 0
       expect(@photo.image.url).to include("/photos/")
 
-      res = URI.open(@photo.image.url)
+      res = URI.parse(@photo.image.url).open
       expect(res).not_to be_nil
       expect(res.size).to eq f.size
     end

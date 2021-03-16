@@ -19,6 +19,7 @@ module CarrierWave
       DEFAULT_API_URL = "http://v0.api.upyun.com"
 
       class UploadError < RuntimeError; end
+
       class ConcurrentUploadError < RuntimeError; end
 
       ##
@@ -62,9 +63,11 @@ module CarrierWave
         File.new(uploader, self, uploader.cache_path(identifier))
       end
 
-      def delete_dir!(path); end
+      def delete_dir!(path)
+      end
 
-      def clean_cache!(seconds); end
-    end # CloudFiles
-  end # Storage
-end # CarrierWave
+      def clean_cache!(seconds)
+      end
+    end
+  end
+end

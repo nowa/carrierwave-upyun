@@ -24,12 +24,6 @@ module CarrierWave::Storage
         @escaped_path ||= CGI.escape(@path)
       end
 
-      def content_type
-        @content_type || ""
-      end
-
-      attr_writer :content_type
-
       ##
       # Reads the contents of the file from Cloud Files
       #
@@ -49,7 +43,7 @@ module CarrierWave::Storage
       def delete
         conn.delete(escaped_path)
         true
-      rescue StandardError => e
+      rescue => e
         puts "carrierwave-upyun delete failed: #{e.inspect}"
         nil
       end
@@ -78,12 +72,12 @@ module CarrierWave::Storage
       # [NilClass] no file name available
       #
       def filename
-        return unless file_url = url
-        ::File.basename(file_url.split('?').first)
+        return unless url
+        ::File.basename(url.split("?").first)
       end
 
       def extension
-        path_elements = path.split('.')
+        path_elements = path.split(".")
         path_elements.last if path_elements.size > 1
       end
 
@@ -111,7 +105,7 @@ module CarrierWave::Storage
       # [Integer] size of file body
       #
       def size
-        headers['content-length'].to_i
+        headers["content-length"].to_i
       end
 
       ##
@@ -124,18 +118,18 @@ module CarrierWave::Storage
       def store(new_file, headers = {})
         # Copy from cache_path
         if new_file.is_a?(self.class)
-          new_file.copy_to(self.escaped_path)
+          new_file.copy_to(escaped_path)
           return true
         end
 
-        res = conn.put(self.escaped_path, new_file.read) do |req|
-          req.headers = { "Expect" => "", "Mkdir" => "true" }.merge(headers)
+        res = conn.put(escaped_path, new_file.read) do |req|
+          req.headers = {"Expect" => "", "Mkdir" => "true"}.merge(headers)
         end
 
         check_put_response!(res)
 
         true
-      rescue ConcurrentUploadError => e
+      rescue ConcurrentUploadError
         retry
       end
 
@@ -151,19 +145,18 @@ module CarrierWave::Storage
       # @return [CarrierWave::Storage::UpYun::File] the location where the file will be stored.
       #
       def copy_to(new_path)
-        escaped_new_path = CGI.escape(new_path)
         res = conn.put(new_path) do |req|
           req.headers = {
-            "X-Upyun-Copy-Source" => "/#{@uploader.upyun_bucket}/#{self.path}",
+            "X-Upyun-Copy-Source" => "/#{@uploader.upyun_bucket}/#{path}",
             "Content-Length" => 0,
-            "Mkdir" => "true",
+            "Mkdir" => "true"
           }
         end
 
         check_put_response!(res)
 
         File.new(@uploader, @base, new_path)
-      rescue ConcurrentUploadError => e
+      rescue ConcurrentUploadError
         retry
       end
 
@@ -190,8 +183,6 @@ module CarrierWave::Storage
           end
         end
       end
-
-
     end
   end
 end
