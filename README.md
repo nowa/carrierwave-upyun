@@ -7,9 +7,14 @@ This gem adds support for [upyun.com](http://www.upyun.com) to [CarrierWave](htt
 
 ## Installation
 
+```bash
+$ bundle add carrierwave-upyun
+```
+
+Or modify your Gemfile to add:
+
 ```ruby
-gem 'carrierwave'
-gem 'carrierwave-upyun'
+gem "carrierwave-upyun"
 ```
 
 > NOTE: 此 Gem 是一个 CarrierWave 的组件，你需要配合 CarrierWave 一起使用。
@@ -24,8 +29,6 @@ CarrierWave.configure do |config|
   config.upyun_username = "xxxxxx"
   config.upyun_password = 'xxxxxx'
   config.upyun_bucket = "my_bucket"
-  # upyun_bucket_domain 以后将会弃用，请改用 upyun_bucket_host
-  # config.upyun_bucket_domain = "my_bucket.files.example.com"
   config.upyun_bucket_host = "http://my_bucket.files.example.com"
 end
 ```
