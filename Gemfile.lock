@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    carrierwave-upyun (1.0.5)
+    carrierwave-upyun (2.0.0)
       carrierwave (>= 1.0.0)
       faraday (>= 2.0)
 
