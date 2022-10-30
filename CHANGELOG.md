@@ -1,3 +1,7 @@
+## 2.0.0
+
+- Fix for support Faraday 2.x.
+
 ## 1.0.5
 
 - Fix carrierwave version dependency.

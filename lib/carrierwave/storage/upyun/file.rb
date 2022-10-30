@@ -43,7 +43,7 @@ module CarrierWave::Storage
       def delete
         conn.delete(escaped_path)
         true
-      rescue => e
+      rescue StandardError => e
         puts "carrierwave-upyun delete failed: #{e.inspect}"
         nil
       end
@@ -73,6 +73,7 @@ module CarrierWave::Storage
       #
       def filename
         return unless url
+
         ::File.basename(url.split("?").first)
       end
 
@@ -123,7 +124,7 @@ module CarrierWave::Storage
         end
 
         res = conn.put(escaped_path, new_file.read) do |req|
-          req.headers = {"Expect" => "", "Mkdir" => "true"}.merge(headers)
+          req.headers = { "Expect" => "", "Mkdir" => "true" }.merge(headers)
         end
 
         check_put_response!(res)
@@ -177,7 +178,7 @@ module CarrierWave::Storage
         @conn ||= begin
           api_host = @uploader.upyun_api_host || DEFAULT_API_URL
           Faraday.new(url: "#{api_host}/#{@uploader.upyun_bucket}") do |req|
-            req.request :basic_auth, @uploader.upyun_username, @uploader.upyun_password
+            req.request :authorization, :basic, @uploader.upyun_username, @uploader.upyun_password
             req.request :url_encoded
             req.adapter Faraday.default_adapter
           end
